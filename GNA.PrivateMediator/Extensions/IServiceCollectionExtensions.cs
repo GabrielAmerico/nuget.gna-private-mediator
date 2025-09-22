@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using PrivateMediator.Interfaces;
 using System.Linq;
 using System.Reflection;
 using System;
+using GNA.Private.Mediator.Interfaces;
 
 namespace GNA.Private.Mediator.Extensions
 {
