@@ -3,7 +3,7 @@ name: Publish to NuGet
 on:
   push:
     tags:
-      - 'v*.*.*'   # dispara apenas quando fizer push de uma tag semântica (ex: v1.0.0)
+      - 'v*.*.*'   # dispara só quando criar uma tag (ex: v1.0.0)
 
 jobs:
   build-and-publish:
@@ -13,7 +13,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0   # precisa para capturar tags
+          fetch-depth: 0   # necessário para capturar tags
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
@@ -37,6 +37,14 @@ jobs:
         run: dotnet pack --configuration Release --no-build -o ./artifacts /p:PackageVersion=${{ env.VERSION }}
 
       - name: Publish to NuGet
-        run: dotnet nuget push "./artifacts/*.nupkg" \
-               --api-key ${{ secrets.NUGET_API_KEY }} \
-               --source https://api.nuget.org/v3/index.json
+        env:
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+        run: |
+          echo "Conteúdo da pasta artifacts:"
+          ls -la ./artifacts || true
+
+          shopt -s nullglob
+          files=(./artifacts/*.nupkg)
+
+          if [ ${#files[@]} -eq 0 ]; then
+            ech
