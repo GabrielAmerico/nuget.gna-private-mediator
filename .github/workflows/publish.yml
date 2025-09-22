@@ -2,8 +2,8 @@ name: Publish to NuGet
 
 on:
   push:
-    branches:
-      - main
+    tags:
+      - 'v*.*.*'   # dispara apenas quando fizer push de uma tag semântica (ex: v1.0.0)
 
 jobs:
   build-and-publish:
@@ -12,11 +12,17 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # precisa para capturar tags
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '8.0.x' # a versão do SDK, não da lib
+          dotnet-version: '8.0.x'
+
+      - name: Extract version from tag
+        id: get_version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
 
       - name: Restore dependencies
         run: dotnet restore
@@ -28,7 +34,7 @@ jobs:
         run: dotnet test --no-build --verbosity normal
 
       - name: Pack NuGet package
-        run: dotnet pack --configuration Release --no-build -o ./artifacts
+        run: dotnet pack --configuration Release --no-build -o ./artifacts /p:PackageVersion=${{ env.VERSION }}
 
       - name: Publish to NuGet
         run: dotnet nuget push "./artifacts/*.nupkg" \
