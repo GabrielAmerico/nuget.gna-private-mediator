@@ -3,7 +3,7 @@ name: Publish to NuGet
 on:
   push:
     tags:
-      - 'v*.*.*'   # dispara só quando criar uma tag (ex: v1.0.0)
+      - 'v*.*.*'   # dispara apenas quando criar uma tag do tipo v1.0.0
 
 jobs:
   build-and-publish:
@@ -18,7 +18,7 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '8.0.x'
+          dotnet-version: '8.0.x'  # SDK para build; compila netstandard2.1 sem problema
 
       - name: Extract version from tag
         id: get_version
@@ -43,8 +43,20 @@ jobs:
           echo "Conteúdo da pasta artifacts:"
           ls -la ./artifacts || true
 
+          # habilita nullglob para que arquivos inexistentes não quebrem o shell
           shopt -s nullglob
+
           files=(./artifacts/*.nupkg)
 
           if [ ${#files[@]} -eq 0 ]; then
-            ech
+            echo "::error::Nenhum .nupkg encontrado em ./artifacts — verifique o step 'Pack NuGet package'."
+            exit 1
+          fi
+
+          for pkg in "${files[@]}"; do
+            echo "Publicando $pkg ..."
+            dotnet nuget push "$pkg" \
+              --api-key "$NUGET_API_KEY" \
+              --source "https://api.nuget.org/v3/index.json" \
+              --skip-duplicate
+          done
