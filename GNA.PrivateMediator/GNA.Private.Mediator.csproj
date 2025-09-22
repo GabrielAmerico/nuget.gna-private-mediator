@@ -10,9 +10,9 @@
     <Description>Uma biblioteca de exemplo para publicação no NuGet.</Description>
     <Product>GNA Private Mediator</Product>
     <PackageTags>exemplo;nuget;dotnet</PackageTags>  
-    <RepositoryUrl>https://github.com/seuusuario/minha-biblioteca</RepositoryUrl>
+    <RepositoryUrl>https://github.com/GabrielAmerico/nuget.gna-private-mediator</RepositoryUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageProjectUrl>https://github.com/seuusuario/minha-biblioteca</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/GabrielAmerico/nuget.gna-private-mediator</PackageProjectUrl>
   </PropertyGroup>
 
   <ItemGroup>
